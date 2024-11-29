@@ -19,7 +19,8 @@ find_package(Eigen3 3.4 CONFIG REQUIRED QUIET)
 # Add your source files (replace with your actual .cpp files)
 set(SOURCES
     test/spline_test.cpp	
-    src/spline.cpp
+    src/CubicSpline.cpp	
+    src/CubicSpline2D.cpp
 )
 
 # Add executable target
