@@ -1,5 +1,5 @@
 # build directories
-*/build/
+build 
 # Logs and temporary files
 /log/
 /logs/
