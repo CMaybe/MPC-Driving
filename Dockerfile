@@ -55,7 +55,19 @@ RUN git clone https://github.com/lava/matplotlib-cpp.git  --recursive /opt/matpl
 	&& cmake \
 	-DCMAKE_BUILD_TYPE=Release \
 	.. \
-	&& make install 
+	&& make install \
+    && cd /opt && rm -r /opt/matplotlib-cpp
+
+# Install Eigen 3.4.0	
+RUN git clone --branch 3.4.0 https://gitlab.com/libeigen/eigen.git /opt/eigen \
+	&& mkdir -p /opt/eigen/build && cd /opt/eigen/build \
+	&& cmake \
+	       -DCMAKE_BUILD_TYPE=Release \
+		   -DEIGEN_BUILD_DOC=OFF \
+		   -DBUILD_TESTING=OFF \
+	   .. \
+	&& make install \
+    && cd /opt && rm -r /opt/eigen
 
 
 # Setup environment
