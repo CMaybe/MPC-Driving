@@ -3,23 +3,29 @@
 
 #include <Eigen/Core>
 #include <unsupported/Eigen/Splines>
+#include <vector>
 
-class SplineFunction {
+class Spline2D {
 public:
-    SplineFunction() = delete;
-    SplineFunction(Eigen::VectorXd const &x_vec, Eigen::VectorXd const &y_vec);
+    Spline2D() = delete;
+    Spline2D(Eigen::VectorXd const &x_vec, Eigen::VectorXd const &y_vec);
 
-    double operator()(double x) const;
+    double operator()(double const &x) const;
+    Eigen::VectorXd operator()(Eigen::VectorXd const &x_vec) const;
+    std::vector<double> operator()(std::vector<double> const &x_vec);
+    Eigen::VectorXd getCurvature();
 
 private:
     // Helpers to scale X values down to [0, 1]
     double scaled_value(double x) const;
-    Eigen::RowVectorXd scaled_values(Eigen::VectorXd const &x_vec) const;
+    Eigen::VectorXd scaled_values(Eigen::VectorXd const &x_vec) const;
 
     double x_min_;
     double x_max_;
 
     // Spline of one-dimensional "points."
     Eigen::Spline<double, 1> spline_;
+    Eigen::VectorXd spline_x_;
+    Eigen::VectorXd spline_y_;
 };
 #endif
