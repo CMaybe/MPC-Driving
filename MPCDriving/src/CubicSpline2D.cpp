@@ -1,4 +1,4 @@
-#include "mpc-driving/math/CubicSpline2D.hpp"
+#include "mpc/math/CubicSpline2D.hpp"
 #include <algorithm>
 #include <cmath>
 
