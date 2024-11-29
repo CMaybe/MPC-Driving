@@ -61,10 +61,6 @@ double CubicSpline::calculateSecondDerivative(double t) {
 }
 
 size_t CubicSpline::findSegmentIndex(double t) {
-    for (int i = 0; i < x_points_.size(); i++) {
-        std::cout << x_points_[i] << '\t';
-    }
-    std::cout << std::endl;
     auto it = std::upper_bound(x_points_.begin(), x_points_.end(), t);
     return std::distance(x_points_.begin(), it) - 1;
 }

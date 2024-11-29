@@ -1,6 +1,8 @@
 #define _USE_MATH_DEFINES
 
-#include "mpc-driving/math/spline.hpp"
+#include "mpc-driving/math/CubicSpline2D.hpp"
+
+#include <Eigen/Dense>
 
 #include <matplotlibcpp.h>
 #include <iostream>
@@ -9,26 +11,31 @@
 namespace plt = matplotlibcpp;
 
 int main() {
-    Eigen::VectorXd xvals(5);
-    Eigen::VectorXd yvals(xvals.rows());
+    std::vector<double> x = {-2.5, 0.0, 2.5, 5.0, 7.5, 3.0, -1.0};
+    std::vector<double> y = {0.7, -6, 5, 6.5, 0.0, 5.0, -2.0};
+    CubicSpline2D sp(x, y);
 
-    xvals << 0.1, 0.4, 1.2, 1.8, 2.0;
-    yvals << 0.1, 0.7, 0.6, 1.1, 0.9;
-
-    std::vector<double> rx, ry;
-
-    SplineFunction s(xvals, yvals);
-    double dt = 0.02;
-    for (double x = 0; x < 2.0; x += dt) {
-        rx.push_back(x);
-        ry.push_back(s(x));
+    std::vector<double> rx, ry, ryaw, rk;
+    std::vector<double> s;
+    for (double t = -0.2; t < sp.getCumulativeDistance().back(); t += 0.1) {
+        s.push_back(t);
     }
 
+    for (double i_s : s) {
+        auto [tx, ty] = sp.calculatePosition(i_s);
+        rx.push_back(tx);
+        ry.push_back(ty);
+        ryaw.push_back(sp.calculateYaw(i_s));
+        rk.push_back(sp.calculateCurvature(i_s));
+    }
+    // plt::subplot(1);
+    plt::figure();
+    plt::plot(x, y, "xb");
     plt::plot(rx, ry, "-r");
-    plt::grid(true);
-    plt::xlabel("X Coordinate");
-    plt::ylabel("Y Coordinate");
-    plt::title("2D Spline Curve");
+    plt::figure();
+    plt::plot(s, ryaw, "-r");
+    plt::figure();
+    plt::plot(s, rk, "-r");
 
     plt::show();
 

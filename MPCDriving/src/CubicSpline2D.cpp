@@ -34,7 +34,7 @@ double CubicSpline2D::calculateCurvature(double s) {
     double ddx = spline_x.calculateSecondDerivative(s);
     double dy = spline_y.calculateFirstDerivative(s);
     double ddy = spline_y.calculateSecondDerivative(s);
-    return (ddy * dx - ddx * dy) / std::pow(dx, 2) + std::pow(dy, 2);
+    return (ddy * dx - ddx * dy) / (dx * dx + dy * dy);
 }
 
 double CubicSpline2D::calculateYaw(double s) {
