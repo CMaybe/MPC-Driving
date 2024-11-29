@@ -1,5 +1,5 @@
-# ROS build directories
-/build/
+# build directories
+*/build/
 # Logs and temporary files
 /log/
 /logs/
