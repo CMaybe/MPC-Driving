@@ -69,6 +69,24 @@ RUN git clone --branch 3.4.0 https://gitlab.com/libeigen/eigen.git /opt/eigen \
 	&& make install \
     && cd /opt && rm -r /opt/eigen
 
+# Install OSQP
+RUN git clone --recursive https://github.com/oxfordcontrol/osqp --branch v0.6.3 /opt/osqp \
+	&& cd /opt/osqp && git submodule update --recursive \
+	&& mkdir -p /opt/osqp/build && cd /opt/osqp/build \
+	&& cmake -G "Unix Makefiles" .. \
+	&& cmake --build . \
+	&& cmake --build . --target install 
+
+# Install OSQP-Eigen
+RUN git clone --recursive https://github.com/robotology/osqp-eigen.git --branch v0.8.0 /opt/osqp-eigen \
+	&& mkdir -p /opt/osqp-eigen/build && cd /opt/osqp-eigen/build \
+	&& cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DBUILD_TESTS=OFF \
+		.. \
+	&& make install \
+    && cd /opt && rm -r /opt/osqp-eigen
+
 
 # Setup environment
 ENV LANG=C.UTF-8
