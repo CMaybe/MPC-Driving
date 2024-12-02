@@ -4,9 +4,13 @@
 #include <Eigen/Dense>
 class State {
 public:
-    State(double x_state, double y_state, double yaw, double velocity);
+    State() = default;
+    State(double x, double y, double yaw, double velocity);
+    State(const State& other) : x_(other.x_), y_(other.y_), yaw_(other.yaw_), v_(other.v_) {
+        state_vector_ = other.state_vector_;
+    }
 
-    void updateState(double acc, double steer_angle, double dt, double W_base);
+    void updateState(double acc, double steer_angle, double dt, double wheel_base);
 
     Eigen::Vector4d getState() const;
 
@@ -21,7 +25,7 @@ private:
     double yaw_;
     double v_;
 
-    Eigen::Vector4d state_;
+    Eigen::Vector4d state_vector_;
 };
 
 #endif  // STATE_HPP
