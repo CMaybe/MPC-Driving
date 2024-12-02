@@ -1,4 +1,4 @@
-#include "SystemModel.hpp"
+#include "mpc/model/SystemModel.hpp"
 
 SystemModel::SystemModel(double dt, double wheel_base) : dt_(dt), wheel_base_(wheel_base) {}
 
