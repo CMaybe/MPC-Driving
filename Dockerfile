@@ -24,13 +24,14 @@ RUN apt-get update \
         gnupg2 \
 		sshpass \
         sudo \
+		swig \
 		vim \
+		wget \
     && apt-get clean
 
 # Update and install necessary dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    cmake \
     dirmngr \
     git \
     gnupg2 \
@@ -47,7 +48,20 @@ RUN apt-get -q update \
 	&& apt-get -y -q --no-install-recommends install \
     libboost-all-dev \
     libpython3-dev \
+	libssl-dev \
+	libtool \
     && apt-get clean
+
+	
+# Install CMake 3.24.3
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.24.3/cmake-3.24.3.tar.gz \
+	&& tar -zxvf cmake-3.24.3.tar.gz && rm cmake-3.24.3.tar.gz \
+	&& mv cmake-3.24.3 /opt/cmake \
+	&& cd /opt/cmake \
+	&& ./bootstrap \
+	&& make install \
+    && make -j$(USE_PROC) \
+    && cd /opt && rm -r /opt/cmake
 
 # Install matplotlib-cpp
 RUN git clone https://github.com/lava/matplotlib-cpp.git  --recursive /opt/matplotlib-cpp \
@@ -86,6 +100,42 @@ RUN git clone --recursive https://github.com/robotology/osqp-eigen.git --branch 
 		.. \
 	&& make install \
     && cd /opt && rm -r /opt/osqp-eigen
+
+
+# Install altro
+RUN git clone https://github.com/zixinz990/altro.git /opt/altro \
+&& mkdir -p /opt/altro/build && cd /opt/altro/build \
+&& cmake \
+	   -DCMAKE_BUILD_TYPE=Release \
+	   -DBUILD_SHARED_LIBS=ON \
+	   -DALTRO_BUILD_TESTS=OFF \
+	   -DCMAKE_INSTALL_PREFIX=/usr/local \
+   .. \
+&& make install \
+&& cd /opt && rm -r /opt/altro
+
+# Install CasADi
+RUN git clone https://github.com/casadi/casadi.git --branch main /opt/casadi \
+	&& mkdir -p /opt/casadi/build && cd /opt/casadi/build \
+	&& cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DBUILD_TESTS=OFF \
+		-DWITH_PYTHON=ON \
+		-DWITH_PYTHON3=ON \
+		.. \
+	&& make install \
+    && cd /opt && rm -r /opt/casadi
+
+# Install gram_savitzky_golay
+RUN git clone --recursive https://github.com/arntanguy/gram_savitzky_golay.git /opt/gram_savitzky_golay \
+	&& cd /opt/gram_savitzky_golay && git submodule init && git submodule update --recursive \
+	&& mkdir -p /opt/gram_savitzky_golay/build && cd /opt/gram_savitzky_golay/build \
+	&& cmake \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DBUILD_TESTS=OFF \
+		.. \
+	&& make install \
+    && cd /opt && rm -r /opt/gram_savitzky_golay
 
 
 # Setup environment
