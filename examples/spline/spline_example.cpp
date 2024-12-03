@@ -11,31 +11,28 @@
 namespace plt = matplotlibcpp;
 
 int main() {
-    std::vector<double> x = {-2.5, 0.0, 2.5, 5.0, 7.5, 3.0, -1.0};
-    std::vector<double> y = {0.7, -6, 5, 6.5, 0.0, 5.0, -2.0};
+    std::vector<double> x = {0.0, 10.0, 20.0, 25.0, 30.0, 40.0};
+    std::vector<double> y = {0.0, 5.0, 0.0, 0.0, 0.0, 0.0};
     CubicSpline2D sp(x, y);
 
-    std::vector<double> rx, ry, ryaw, rk;
+    std::vector<double> path_x, path_y, path_yaw;
     std::vector<double> s;
-    for (double t = -0.2; t < sp.getCumulativeDistance().back(); t += 0.1) {
+    for (double t = 0; t < sp.getCumulativeDistance().back(); t += 1) {
         s.push_back(t);
     }
 
     for (double i_s : s) {
         auto [tx, ty] = sp.calculatePosition(i_s);
-        rx.push_back(tx);
-        ry.push_back(ty);
-        ryaw.push_back(sp.calculateYaw(i_s));
-        rk.push_back(sp.calculateCurvature(i_s));
+        path_x.push_back(tx);
+        path_y.push_back(ty);
+        path_yaw.push_back(sp.calculateYaw(i_s));
     }
     // plt::subplot(1);
     plt::figure();
     plt::plot(x, y, "xb");
-    plt::plot(rx, ry, "-r");
+    plt::plot(path_x, path_y, "-r");
     plt::figure();
-    plt::plot(s, ryaw, "-r");
-    plt::figure();
-    plt::plot(s, rk, "-r");
+    plt::plot(s, path_yaw, "-r");
 
     plt::show();
 
