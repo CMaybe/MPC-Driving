@@ -6,11 +6,11 @@
 
 int getClosestPointOnPath(const std::vector<double>& path_x,
                           const std::vector<double>& path_y,
-                          const Eigen::Vector2d& cur_state_vec,
+                          const Eigen::Vector4d& cur_state_vec,
                           int point,
                           int N_search);
 
-Eigen::MatrixXd calDesiredTrajectory(const Eigen::Vector2d& cur_state_vec,
+Eigen::MatrixXd calDesiredTrajectory(const Eigen::Vector4d& cur_state_vec,
                                      const std::vector<double>& path_x,
                                      const std::vector<double>& path_y,
                                      double dist_step,
