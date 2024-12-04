@@ -10,9 +10,9 @@ public:
     CubicSpline2D() = delete;
     CubicSpline2D(const std::vector<double>& x_points, const std::vector<double>& y_points);
     std::pair<double, double> calculatePosition(double s);
+    std::vector<double> getCumulativeDistance() const;
     double calculateCurvature(double s);
     double calculateYaw(double s);
-    std::vector<double> getCumulativeDistance() const;
 
 private:
     CubicSpline spline_x, spline_y;
