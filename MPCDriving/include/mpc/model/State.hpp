@@ -10,8 +10,12 @@ public:
         : x_(other.x_), y_(other.y_), yaw_(other.yaw_), velocity_(other.velocity_) {
         state_vector_ = other.state_vector_;
     }
+    State(const Eigen::Vector4d& vector)
+        : x_(vector[0]), y_(vector[1]), yaw_(vector[2]), velocity_(vector[3]) {
+        state_vector_ = vector;
+    }
 
-    void updateState(double acc, double steer_angle, double dt, double wheel_base);
+    void updateState(double steer_angle, double acc, double dt, double wheel_base);
 
     Eigen::Vector4d getState() const;
 
