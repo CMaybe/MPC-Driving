@@ -25,13 +25,14 @@ RUN apt-get update \
 		sshpass \
         sudo \
 		vim \
+		wget \
     && apt-get clean
 
 # Update and install necessary dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    cmake \
     dirmngr \
+	cmake \
     git \
     gnupg2 \
     python3-numpy \
@@ -48,6 +49,7 @@ RUN apt-get -q update \
     libboost-all-dev \
     libpython3-dev \
     && apt-get clean
+
 
 # Install matplotlib-cpp
 RUN git clone https://github.com/lava/matplotlib-cpp.git  --recursive /opt/matplotlib-cpp \
@@ -70,9 +72,42 @@ RUN git clone --branch 3.4.0 https://gitlab.com/libeigen/eigen.git /opt/eigen \
     && cd /opt && rm -r /opt/eigen
 
 
+# Install Ipopt
+# Update and install necessary dependencies
+RUN apt-get update && apt-get install -y \
+	cppad \
+	gfortran\
+	patch \
+	pkg-config \
+	liblapack-dev \
+	libmetis-dev\
+    && apt-get clean
+
+RUN	git clone --branch stable/2.0 https://github.com/coin-or-tools/ThirdParty-ASL.git /opt/ThirdParty-ASL \
+	&& mkdir -p /opt/ThirdParty-ASL  && cd /opt/ThirdParty-ASL \
+	&& ./get.ASL && ./configure \
+	&& make install \
+	&& cd /opt && rm -r /opt/ThirdParty-ASL
+
+
+RUN	git clone --branch stable/3.0 https://github.com/coin-or-tools/ThirdParty-Mumps.git /opt/ThirdParty-Mumps \
+	&& mkdir -p /opt/ThirdParty-Mumps && cd /opt/ThirdParty-Mumps \
+	&& ./get.Mumps && ./configure \
+	&& make install \
+	&& cd /opt && rm -r /opt/ThirdParty-Mumps
+	
+
+RUN	git clone --branch stable/3.14 https://github.com/coin-or/Ipopt.git /opt/Ipopt \
+	&& mkdir -p /opt/Ipopt/build && cd /opt/Ipopt/build \
+	&& ../configure --prefix=/usr/local \
+    && make install \
+	&& cd /opt && rm -r /opt/Ipopt
+
+
 # Setup environment
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 # Add user info
 ARG USER_UID=1000
@@ -85,8 +120,6 @@ RUN useradd --create-home --shell /bin/bash \
 	&& echo "${USER_NAME}:${GROUP_NAME}" | sudo chpasswd \
 	&& echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USER_NAME}"
 
-RUN usermod -aG video ${USER_NAME}
-
 # Make workspace 
 RUN mkdir -p /home/${USER_NAME}/${PROJECT_NAME}
 ENV HOME /home/${USER_NAME}
@@ -97,5 +130,3 @@ RUN chown -R ${USER_NAME}:${GROUP_NAME} ${WORKSPACE}
 USER ${USER_NAME}
 WORKDIR ${WORKSPACE}
 ENV SHELL "/bin/bash"
-
-CMD ["bash"]

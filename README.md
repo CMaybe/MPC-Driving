@@ -43,7 +43,7 @@ docker exec -it dev-mpc-driving /bin/bash
 Model Predictive Control (MPC) is a powerful optimization-based control strategy widely used in autonomous systems. This project demonstrates its application for controlling a car in a 2D simulation. The car follows a predefined trajectory while considering constraints such as velocity limits, obstacle avoidance, and steering limits.
 
 ## Features
-- **2D environment simulation** with realistic vehicle dynamics.
+- **2D environment simulation** with realistic vehicle Model.
 - **MPC implementation** for optimal control.
 - **CubicSpline for trajectory generation** to create smooth paths.
 - **Visualization** using matplotlibcpp for real-time feedback.
@@ -88,6 +88,6 @@ make
 ## TODO
 - [ ] **Implement obstacle avoidance** in the MPC formulation.
 - [ ] **Improve visualization** with additional metrics (e.g., control inputs, predicted trajectory).
-- [ ] **Add support for dynamic obstacles** to enhance realism.
+- [ ] **Add support for System obstacles** to enhance realism.
 - [ ] **Optimize computational efficiency** for real-time performance.
 - [ ] **Update ReadMe** for advanced simulations.

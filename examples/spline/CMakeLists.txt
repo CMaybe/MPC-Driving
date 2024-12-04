@@ -19,13 +19,13 @@ find_package(Eigen3 3.4 CONFIG REQUIRED QUIET)
 # Add your source files (replace with your actual .cpp files)
 set(SOURCES
     spline_example.cpp	
-    ../src/CubicSpline.cpp	
-    ../src/CubicSpline2D.cpp
+    ../../MPCDriving/src/math/CubicSpline.cpp	
+    ../../MPCDriving/src/math/CubicSpline2D.cpp
 )
 
 # Add executable target
 add_executable(spline_planner ${SOURCES})
-target_include_directories(spline_planner PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_include_directories(spline_planner PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../MPCDriving/include)
 # Link libraries (Python3 and Boost system/filesystem)
 target_link_libraries(spline_planner 
 	Eigen3::Eigen
