@@ -103,9 +103,11 @@ RUN	git clone --branch stable/3.14 https://github.com/coin-or/Ipopt.git /opt/Ipo
     && make install \
 	&& cd /opt && rm -r /opt/Ipopt
 
+
 # Setup environment
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 # Add user info
 ARG USER_UID=1000
@@ -118,8 +120,6 @@ RUN useradd --create-home --shell /bin/bash \
 	&& echo "${USER_NAME}:${GROUP_NAME}" | sudo chpasswd \
 	&& echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" > "/etc/sudoers.d/${USER_NAME}"
 
-RUN usermod -aG video ${USER_NAME}
-
 # Make workspace 
 RUN mkdir -p /home/${USER_NAME}/${PROJECT_NAME}
 ENV HOME /home/${USER_NAME}
@@ -130,5 +130,3 @@ RUN chown -R ${USER_NAME}:${GROUP_NAME} ${WORKSPACE}
 USER ${USER_NAME}
 WORKDIR ${WORKSPACE}
 ENV SHELL "/bin/bash"
-
-CMD ["bash"]
