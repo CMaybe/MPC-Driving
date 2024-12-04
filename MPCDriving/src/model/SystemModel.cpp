@@ -1,5 +1,4 @@
 #include "mpc/model/SystemModel.hpp"
-#include "SystemModel.hpp"
 
 SystemModel::SystemModel(double dt) : dt_(dt) {}
 SystemModel::SystemModel(const SystemModel& other)
@@ -8,7 +7,7 @@ SystemModel::SystemModel(const SystemModel& other)
 void SystemModel::setState(double x, double y, double yaw, double velocity) {
     state_ = State(x, y, yaw, velocity);
 }
-void SystemModel::setState(const State& other) { state_ = State(other); }
+void SystemModel::setState(const State& other) { state_ = other; }
 void SystemModel::setState(const Eigen::Vector4d& state_vector) { state_ = State(state_vector); }
 
 void SystemModel::updateModel(double yaw, double velocity, double steer) {
