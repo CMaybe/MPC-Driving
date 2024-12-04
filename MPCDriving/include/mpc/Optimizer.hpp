@@ -23,7 +23,14 @@ public:
             const std::vector<double>& x_ref,
             const std::vector<double>& y_ref,
             const std::vector<double>& yaw_ref,
-            const std::vector<double>& velocity_ref);
+            const std::vector<double>& velocity_ref,
+            const size_t& prediction_horizon,
+            const size_t& x_idx,
+            const size_t& y_idx,
+            const size_t& yaw_idx,
+            const size_t& velocity_idx,
+            const size_t& steer_idx,
+            const size_t& acc_idx);
 
     typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
     void operator()(ADvector& fg, const ADvector& vars);

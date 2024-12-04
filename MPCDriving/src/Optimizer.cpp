@@ -6,16 +6,28 @@ FG_eval::FG_eval(const SystemModel& system,
                  const std::vector<double>& x_ref,
                  const std::vector<double>& y_ref,
                  const std::vector<double>& yaw_ref,
-                 const std::vector<double>& velocity_ref)
+                 const std::vector<double>& velocity_ref,
+                 const size_t& prediction_horizon,
+                 const size_t& x_idx,
+                 const size_t& y_idx,
+                 const size_t& yaw_idx,
+                 const size_t& velocity_idx,
+                 const size_t& steer_idx,
+                 const size_t& acc_idx)
     : system_(system)
     , x_ref_(x_ref)
     , y_ref_(y_ref)
     , yaw_ref_(yaw_ref)
     , velocity_ref_(velocity_ref)
     , wheel_base_(system.getWheelBase())
-    , dt_(system.getDt()){
-
-      };
+    , dt_(system.getDt())
+    , prediction_horizon_(prediction_horizon)
+    , x_idx_(x_idx)
+    , y_idx_(y_idx)
+    , yaw_idx_(yaw_idx)
+    , velocity_idx_(velocity_idx)
+    , steer_idx_(steer_idx)
+    , acc_idx_(acc_idx){};
 
 void FG_eval::operator()(ADvector& fg, const ADvector& vars) {
     // The cost is stored is the first element of `fg`.
@@ -23,7 +35,7 @@ void FG_eval::operator()(ADvector& fg, const ADvector& vars) {
     fg[0] = 0;
 
     // The part of the cost based on the reference state.
-    for (int t = 0; t < prediction_horizon_; ++t) {
+    for (size_t t = 0; t < prediction_horizon_; ++t) {
         fg[0] += 5.0 * CppAD::pow(vars[x_idx_ + t] - x_ref_[t], 2);
         fg[0] += 5.0 * CppAD::pow(vars[y_idx_ + t] - y_ref_[t], 2);
         fg[0] += 2.0 * CppAD::pow(vars[yaw_idx_ + t] - yaw_ref_[t], 2);
@@ -31,7 +43,7 @@ void FG_eval::operator()(ADvector& fg, const ADvector& vars) {
     }
 
     // Minimize the use of actuators.
-    for (int t = 0; t < prediction_horizon_ - 1; ++t) {
+    for (size_t t = 0; t < prediction_horizon_ - 1; ++t) {
         fg[0] += 0.01 * CppAD::pow(vars[steer_idx_ + t], 2);
         fg[0] += 0.01 * CppAD::pow(vars[acc_idx_ + t], 2);
     }
@@ -46,13 +58,14 @@ void FG_eval::operator()(ADvector& fg, const ADvector& vars) {
     // We add 1 to each of the starting indices due to cost being located at
     // index 0 of `fg`.
     // This bumps up the position of all the other values.
+
     fg[1 + x_idx_] = vars[x_idx_];
     fg[1 + y_idx_] = vars[y_idx_];
     fg[1 + yaw_idx_] = vars[yaw_idx_];
     fg[1 + velocity_idx_] = vars[velocity_idx_];
 
     // The rest of the constraints
-    for (int t = 1; t < prediction_horizon_; ++t) {
+    for (size_t t = 1; t < prediction_horizon_; ++t) {
         // The state at time t+1 .
         AD<double> x1 = vars[x_idx_ + t];
         AD<double> y1 = vars[y_idx_ + t];
@@ -164,7 +177,18 @@ std::vector<double> Optimizer::Solve(const std::vector<double>& x_ref,
     constraints_upperbound[velocity_idx_] = velocity;
 
     // Object that computes objective and constraints
-    FG_eval fg_eval(system_, x_ref, y_ref, yaw_ref, velocity_ref);
+    FG_eval fg_eval(system_,
+                    x_ref,
+                    y_ref,
+                    yaw_ref,
+                    velocity_ref,
+                    prediction_horizon_,
+                    x_idx_,
+                    y_idx_,
+                    yaw_idx_,
+                    velocity_idx_,
+                    steer_idx_,
+                    acc_idx_);
 
     // options
     std::string options;
