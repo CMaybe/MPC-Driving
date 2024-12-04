@@ -22,7 +22,6 @@ int main() {
 
     double sx = 0.0;
     double sy = -5;
-    ;
 
     double dt = 0.1;
     double wheel_base = 3.5;
