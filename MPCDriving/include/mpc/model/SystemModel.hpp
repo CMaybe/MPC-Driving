@@ -18,23 +18,26 @@ public:
     void updateModel(double yaw, double velocity, double steer);
     Eigen::Vector4d updateState(const Eigen::Vector4d& state, const Eigen::Vector2d& input);
 
-    Eigen::Matrix4d getA() const;
-    Eigen::Matrix4d getB() const;
-    Eigen::Matrix4d getC() const;
-    Eigen::Matrix4d getAd() const;
-    Eigen::Matrix4d getBd() const;
+    Eigen::Matrix<double, 4, 4> getA() const;
+    Eigen::Matrix<double, 4, 4> getAd() const;
+    Eigen::Matrix<double, 4, 2> getB() const;
+    Eigen::Matrix<double, 4, 2> getBd() const;
+    Eigen::Vector4d getC() const;
+    Eigen::Vector4d getCd() const;
     State getState() const;
 
     double getDt() const;
     double getWheelBase() const;
 
 private:
+    void updateDiscretizedModel();
+
     double dt_;
     const double wheel_base_ = 3.5;
 
-    void updateDiscretizedModel();
-    Eigen::Matrix4d A_, B_, C_;
-    Eigen::Matrix4d Ad_, Bd_;
+    Eigen::Matrix<double, 4, 4> A_, Ad_;
+    Eigen::Matrix<double, 4, 2> B_, Bd_;
+    Eigen::Vector4d C_, Cd_;
 
     State state_;
 };

@@ -21,6 +21,7 @@ void MPC::run(const std::vector<double>& path_x,
     auto vars = optimizer.Solve(path_x, path_y, path_yaw, path_velocity);
     Eigen::Vector4d state(vars[0], vars[1], vars[2], vars[3]);
     Eigen::Vector2d input(vars[4], vars[5]);
+    system_.updateModel(vars[2], vars[3], vars[4]);
     system_.updateState(state, input);
     output_ = system_.getState().getState();
 }

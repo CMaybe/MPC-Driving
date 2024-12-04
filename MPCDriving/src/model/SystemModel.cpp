@@ -1,5 +1,7 @@
 #include "mpc/model/SystemModel.hpp"
 
+#include <iostream>
+
 SystemModel::SystemModel(double dt) : dt_(dt) {}
 SystemModel::SystemModel(const SystemModel& other)
     : dt_(other.dt_), Bd_(other.Bd_), state_(other.state_) {}
@@ -18,12 +20,13 @@ void SystemModel::updateModel(double yaw, double velocity, double steer) {
 
     B_.row(0) << 0.0, 0.0;
     B_.row(1) << 0.0, 0.0;
-    B_.row(2) << velocity * wheel_base_ / (std::cos(steer) * std::cos(steer)), 0.0;
+    B_.row(2) << velocity / (wheel_base_ * std::cos(steer) * std::cos(steer)), 0.0;
     B_.row(3) << 0.0, 1;
 
-    C_.row(0) << 1.0, 0.0, 0.0, 0.0;
-    C_.row(1) << 0.0, 1.0, 0.0, 0.0;
-    C_.row(2) << 0.0, 0.0, 1.0, 0.0;
+    C_[0] = velocity * std::sin(yaw) * yaw;
+    C_[1] = -velocity * std::cos(yaw) * yaw;
+    C_[2] = -velocity * steer / (wheel_base_ * std::cos(steer) * std::cos(steer));
+    C_[3] = 0.0;
 
     updateDiscretizedModel();
 }
@@ -32,24 +35,22 @@ void SystemModel::updateDiscretizedModel() {
     Ad_ = (Eigen::Matrix4d::Identity() + 0.5 * dt_ * A_) *
           (Eigen::Matrix4d::Identity() - 0.5 * dt_ * A_).inverse();
     Bd_ = B_ * dt_;
+    Cd_ = C_ * dt_;
 }
 
 Eigen::Vector4d SystemModel::updateState(const Eigen::Vector4d& state,
                                          const Eigen::Vector2d& input) {
-    // return Ad_ * state + Bd_ * input;
-    state_.updateState(input[0], input[1], dt_, wheel_base_);
+    Eigen::Vector4d result = Ad_ * state_.getState() + Bd_ * input + Cd_;
+    state_ = result;
     return state_.getState();
-    // (x0 + vel0 * CppAD::cos(yaw0) * dt_);
-    // fg[1 + y_idx_ + t] = y1 - (y0 + vel0 * CppAD::sin(yaw0) * dt_);
-    // fg[1 + yaw_idx_ + t] = yaw1 - (yaw0 + vel0 / wheel_base_ * CppAD::tan(steer0) * dt_);
-    // fg[1 + velocity_idx_ + t] = vel1 - (vel0 + acc0 * dt_);
 }
 
-Eigen::Matrix4d SystemModel::getA() const { return A_; }
-Eigen::Matrix4d SystemModel::getB() const { return B_; }
-Eigen::Matrix4d SystemModel::getC() const { return C_; }
-Eigen::Matrix4d SystemModel::getAd() const { return Ad_; }
-Eigen::Matrix4d SystemModel::getBd() const { return Bd_; }
+Eigen::Matrix<double, 4, 4> SystemModel::getA() const { return A_; }
+Eigen::Matrix<double, 4, 4> SystemModel::getAd() const { return Ad_; }
+Eigen::Matrix<double, 4, 2> SystemModel::getB() const { return B_; }
+Eigen::Matrix<double, 4, 2> SystemModel::getBd() const { return Bd_; }
+Eigen::Vector4d SystemModel::getC() const { return C_; }
+Eigen::Vector4d SystemModel::getCd() const { return Cd_; }
 
 State SystemModel::getState() const { return state_; }
 double SystemModel::getWheelBase() const { return wheel_base_; }
