@@ -11,10 +11,11 @@ public:
 
     void updateModel(double yaw, double velocity, double steer);
 
-    Eigen::MatrixXd getA() const;
-    Eigen::MatrixXd getB() const;
-    Eigen::MatrixXd getC() const;
-    Eigen::VectorXd getAd() const;
+    Eigen::Matrix4d getA() const;
+    Eigen::Matrix4d getB() const;
+    Eigen::Matrix4d getC() const;
+    Eigen::Matrix4d getAd() const;
+    Eigen::Matrix4d getBd() const;
 
     double getWheelBase() const;
 
@@ -22,8 +23,10 @@ private:
     double dt_;
     double wheel_base_;
 
-    Eigen::MatrixXd A_, B_, C_;
-    Eigen::MatrixXd Ad_, Bd_;
+    void updateDiscretizedModel();
+    Eigen::Vector4d updateState(const Eigen::Vector4d& state, const Eigen::Vector4d& input);
+    Eigen::Matrix4d A_, B_, C_;
+    Eigen::Matrix4d Ad_, Bd_;
 };
 
 #endif  // System_MODEL_HPP
