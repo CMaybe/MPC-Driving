@@ -9,11 +9,12 @@ public:
     SystemModel() = default;
     SystemModel(double dt, double wheel_base);
 
-    void updateModel(double velocity, double yaw, double steer);
+    void updateModel(double yaw, double velocity, double steer);
 
     Eigen::MatrixXd getA() const;
     Eigen::MatrixXd getB() const;
-    Eigen::VectorXd getC() const;
+    Eigen::MatrixXd getC() const;
+    Eigen::VectorXd getAd() const;
 
     double getWheelBase() const;
 
@@ -22,7 +23,7 @@ private:
     double wheel_base_;
 
     Eigen::MatrixXd A_, B_, C_;
-    Eigen::MatrixXd Ad_;
+    Eigen::MatrixXd Ad_, Bd_;
 };
 
 #endif  // System_MODEL_HPP
