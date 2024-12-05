@@ -71,8 +71,8 @@ make
 
 
 
-### 1.Spline
-An example using **CubicSpline** for trajectory generation is included in the repository. You can find it in the `examples` directory:
+### 2.MPC
+An example using **MPC** for path following is included in the repository. You can find it in the `examples` directory:
 
 ```bash
 cd MPCDriving/examples/mpc
