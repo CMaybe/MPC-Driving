@@ -10,7 +10,11 @@ class MPC {
 public:
     // Constructor to initialize parameters
     MPC() = delete;
-    MPC(const SystemModel& system, const size_t& prediction_horizon, const double& dt);
+    MPC(const SystemModel& system,
+        const Eigen::Vector4d& state_weight,
+        const Eigen::Vector2d& input_weight,
+        const size_t& prediction_horizon,
+        const double& dt);
 
     void run(const std::vector<double>& path_x,
              const std::vector<double>& path_y,
@@ -33,6 +37,9 @@ private:
     double dt_;
 
     SystemModel system_;
+
+    Eigen::Vector4d state_weight_;
+    Eigen::Vector2d input_weight_;
 
     std::vector<double> predicted_x_;
     std::vector<double> predicted_y_;

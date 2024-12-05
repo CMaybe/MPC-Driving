@@ -20,6 +20,8 @@ class FG_eval {
 public:
     FG_eval() = delete;
     FG_eval(const SystemModel& system,
+            const Eigen::Vector4d& state_weight,
+            const Eigen::Vector2d& input_weight,
             const std::vector<double>& x_ref,
             const std::vector<double>& y_ref,
             const std::vector<double>& yaw_ref,
@@ -37,6 +39,8 @@ public:
 
 private:
     SystemModel system_;
+    Eigen::Vector4d state_weight_;
+    Eigen::Vector2d input_weight_;
     size_t prediction_horizon_;
     size_t x_idx_, y_idx_, yaw_idx_, velocity_idx_;
     size_t steer_idx_, acc_idx_;
@@ -48,7 +52,10 @@ private:
 class Optimizer {
 public:
     Optimizer() = delete;
-    Optimizer(const SystemModel& system, const size_t& prediction_horizon);
+    Optimizer(const SystemModel& system,
+              const Eigen::Vector4d& state_weight,
+              const Eigen::Vector2d& input_weight,
+              const size_t& prediction_horizon);
 
     std::vector<double> Solve(const std::vector<double>& x_ref,
                               const std::vector<double>& y_ref,
@@ -57,6 +64,8 @@ public:
 
 private:
     SystemModel system_;
+    Eigen::Vector4d state_weight_;
+    Eigen::Vector2d input_weight_;
     size_t prediction_horizon_;
     size_t x_idx_, y_idx_, yaw_idx_, velocity_idx_;
     size_t steer_idx_, acc_idx_;
