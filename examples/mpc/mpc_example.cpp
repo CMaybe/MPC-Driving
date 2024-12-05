@@ -24,17 +24,17 @@ std::vector<double> slice(const std::vector<double>& vec, size_t start, size_t e
 }
 
 void plot_car(double x, double y, double yaw) {
-    const double L = 3.5;
-    const double W = 2.0;
-    const double WD = 1.0;
-    const double WW = 0.5;
+    const double length = 3.5;
+    const double width = 2.0;
+    const double wheel_diameter = 1.0;
+    const double wheel_width = 0.5;
 
     Eigen::Matrix2d rotate;
     rotate << std::cos(yaw), -std::sin(yaw), std::sin(yaw), std::cos(yaw);
 
     Eigen::MatrixXd car(2, 5);
-    car.row(0) << -L / 2, -L / 2, L / 2, L / 2, -L / 2;
-    car.row(1) << W / 2, -W / 2, -W / 2, W / 2, W / 2;
+    car.row(0) << -length / 2, -length / 2, length / 2, length / 2, -length / 2;
+    car.row(1) << width / 2, -width / 2, -width / 2, width / 2, width / 2;
     car = rotate * car;
     car.row(0).array() += x;
     car.row(1).array() += y;
@@ -50,11 +50,13 @@ void plot_car(double x, double y, double yaw) {
     plt::plot(car_x, car_y, "-k");
 
     Eigen::MatrixXd rear_wheel(2, 5), front_wheel;
-    rear_wheel.row(0) << -WD / 2, -WD / 2, WD / 2, WD / 2, -WD / 2;
-    rear_wheel.row(1) << WW / 2, -WW / 2, -WW / 2, WW / 2, WW / 2;
+    rear_wheel.row(0) << -wheel_diameter / 2, -wheel_diameter / 2, wheel_diameter / 2,
+        wheel_diameter / 2, -wheel_diameter / 2;
+    rear_wheel.row(1) << wheel_width / 2, -wheel_width / 2, -wheel_width / 2, wheel_width / 2,
+        wheel_width / 2;
     front_wheel = rear_wheel;
 
-    rear_wheel.row(0).array() -= L / 2;
+    rear_wheel.row(0).array() -= length / 2;
     rear_wheel = rotate * rear_wheel;
     rear_wheel.row(0).array() += x;
     rear_wheel.row(1).array() += y;
@@ -67,7 +69,7 @@ void plot_car(double x, double y, double yaw) {
         rear_wheel_y[i] = rear_wheel(1, i);
     }
 
-    front_wheel.row(0).array() += L / 2;
+    front_wheel.row(0).array() += length / 2;
     front_wheel = rotate * front_wheel;
     front_wheel.row(0).array() += x;
     front_wheel.row(1).array() += y;
@@ -111,10 +113,14 @@ int main() {
         yaw_ref.push_back(sp.calculateYaw(i_s));
         speed_ref.push_back(5.0);
     }
-    SystemModel system(dt);
+    SystemModel system(dt, 3.0);
     system.setState(sx, sy, yaw_ref.front(), 0.0);
-    MPC mpc(system, prediction_horizon, dt);
-    Eigen::Vector2d input;
+    Eigen::Vector4d state_weight;
+    Eigen::Vector2d input_weight;
+
+    state_weight << 3.0, 3.0, 1.0, 0.1;
+    input_weight << 0.05, 0.05;
+    MPC mpc(system, state_weight, input_weight, prediction_horizon, dt);
 
     std::vector<double> path_x;
     std::vector<double> path_y;
