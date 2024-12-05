@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 
 #include "mpc/MPC.hpp"
+#include "mpc/Utils.hpp"
 #include "mpc/math/CubicSpline2D.hpp"
 
 #include <Eigen/Core>
@@ -14,14 +15,6 @@
 
 using CppAD::AD;
 namespace plt = matplotlibcpp;
-
-std::vector<double> slice(const std::vector<double>& vec, size_t start, size_t end) {
-    if (start >= vec.size() || start > end) {
-        return {};
-    }
-    end = std::min(end, vec.size());
-    return std::vector<double>(vec.begin() + start, vec.begin() + end);
-}
 
 void plot_car(double x, double y, double yaw) {
     const double length = 3.5;
@@ -92,11 +85,13 @@ int main() {
     std::vector<double> y = {0.0, 5.0, 0.0, 0.0, -3.0, 0.0};
     CubicSpline2D sp(x, y);
 
-    double sx = 0.0;
+    double sx = -5.0;
+    double gx = 40.0;
     double sy = -5;
+    double gy = 0.0;
 
     double dt = 0.1;
-    double wheel_base = 3.5;
+    double wheel_base = 3.0;
     size_t prediction_horizon = 20;
 
     std::vector<double> s;
@@ -111,14 +106,14 @@ int main() {
         x_ref.push_back(tx);
         y_ref.push_back(ty);
         yaw_ref.push_back(sp.calculateYaw(i_s));
-        speed_ref.push_back(5.0);
+        speed_ref.push_back(6.0);
     }
-    SystemModel system(dt, 3.0);
+    SystemModel system(dt, wheel_base);
     system.setState(sx, sy, yaw_ref.front(), 0.0);
     Eigen::Vector4d state_weight;
     Eigen::Vector2d input_weight;
 
-    state_weight << 3.0, 3.0, 1.0, 0.1;
+    state_weight << 3.0, 3.0, 1.0, 0.01;
     input_weight << 0.05, 0.05;
     MPC mpc(system, state_weight, input_weight, prediction_horizon, dt);
 
@@ -129,22 +124,29 @@ int main() {
     std::vector<double> result_y;
 
     plt::figure_size(1440, 1080);
-
-    for (int i = 0; i < x_ref.size() - prediction_horizon; i++) {
-        mpc.run(slice(x_ref, i, x_ref.size()),
-                slice(y_ref, i, y_ref.size()),
-                slice(yaw_ref, i, yaw_ref.size()),
-                slice(speed_ref, 0, speed_ref.size()));
-        Eigen::Vector4d state = mpc.getState();
+    int target_point_idx = 0;
+    Eigen::Vector4d state(sx, sy, 0, 0);
+    std::map<std::string, std::string> options;
+    options["color"] = "black";
+    options["linestyle"] = "none";  // No line (just markers)
+    options["marker"] = "x";        // Use 'x' markers
+    options["markersize"] = "10";
+    while (std::hypot(gx - state[0], gy - state[1]) >= 0.001) {
+        if (x_ref.size() - target_point_idx <= prediction_horizon) break;
+        mpc.run(slice(x_ref, target_point_idx, x_ref.size()),
+                slice(y_ref, target_point_idx, y_ref.size()),
+                slice(yaw_ref, target_point_idx, yaw_ref.size()),
+                slice(speed_ref, target_point_idx, speed_ref.size()));
+        target_point_idx = getClosestPointOnPath(x_ref, y_ref, state, target_point_idx, 5);
         path_x = mpc.getPredictedX();
         path_y = mpc.getPredictedY();
         result_x.push_back(state[0]);
         result_y.push_back(state[1]);
         plt::cla();
-        plt::plot(x, y, "xb");
+        plt::plot(x, y, options);
+        state = mpc.getState();
         plt::plot(result_x, result_y, "ob");
         plt::plot(path_x, path_y, "xr");
-        plt::plot(x_ref, y_ref, "-r");
         plot_car(state[0], state[1], state[2]);
         plt::axis("equal");
         plt::xlim(-10, 50);

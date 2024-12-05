@@ -26,6 +26,7 @@ mpc_example.cpp
 ../../MPCDriving/src/model/SystemModel.cpp
 ../../MPCDriving/src/MPC.cpp
 ../../MPCDriving/src/Optimizer.cpp
+../../MPCDriving/src/Utils.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
