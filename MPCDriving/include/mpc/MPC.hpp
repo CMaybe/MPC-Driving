@@ -23,11 +23,11 @@ public:
     std::vector<double> getPredictedVelocoity() const;
     std::vector<double> getPredictedSteer() const;
     std::vector<double> getPredictedAcc() const;
-    Eigen::Vector4d getOutput() const;
+    Eigen::Vector4d getState() const;
     Eigen::Vector2d getInput() const;
 
 private:
-    Eigen::Vector4d output_;
+    Eigen::Vector4d state_;
     Eigen::Vector2d input_;
     size_t num_state_, num_input_, num_output_, prediction_horizon_;
     double dt_;

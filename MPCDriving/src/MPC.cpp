@@ -34,13 +34,13 @@ void MPC::run(const std::vector<double>& path_x,
         predicted_steer_[i] = vars[i + 4 * prediction_horizon_];
         predicted_acc_[i] = vars[i + 5 * prediction_horizon_];
     }
-    output_ << predicted_x_[1], predicted_y_[1], predicted_yaw_[1], predicted_velocity_[1];
+    state_ << predicted_x_[1], predicted_y_[1], predicted_yaw_[1], predicted_velocity_[1];
     input_ << predicted_steer_[0], predicted_acc_[0];
-    system_.updateModel(output_[2], output_[3], input_[0]);
-    system_.updateState(output_, input_);
+    system_.updateModel(state_[2], state_[3], input_[0]);
+    system_.updateState(state_, input_);
 }
 
-Eigen::Vector4d MPC::getOutput() const { return output_; }
+Eigen::Vector4d MPC::getState() const { return state_; }
 Eigen::Vector2d MPC::getInput() const { return input_; }
 
 std::vector<double> MPC::getPredictedX() const { return predicted_x_; }
