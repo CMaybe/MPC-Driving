@@ -211,10 +211,9 @@ std::vector<double> Optimizer::Solve(const std::vector<double>& x_ref,
     ok &= solution.status == CppAD::ipopt::solve_result<Dvector>::success;
 
     auto cost = solution.obj_value;
-    return {solution.x[x_idx_ + 1],
-            solution.x[y_idx_ + 1],
-            solution.x[yaw_idx_ + 1],
-            solution.x[velocity_idx_ + 1],
-            solution.x[steer_idx_],
-            solution.x[acc_idx_]};
+    std::vector<double> result(solution.x.size());
+    for (size_t i = 0; i < solution.x.size(); i++) {
+        result[i] = solution.x[i];
+    }
+    return result;
 }
