@@ -92,7 +92,7 @@ int main() {
 
     double dt = 0.1;
     double wheel_base = 3.0;
-    size_t prediction_horizon = 20;
+    size_t prediction_horizon = 10;
 
     std::vector<double> s;
     std::vector<double> x_ref, y_ref, yaw_ref, speed_ref;
@@ -106,16 +106,30 @@ int main() {
         x_ref.push_back(tx);
         y_ref.push_back(ty);
         yaw_ref.push_back(sp.calculateYaw(i_s));
-        speed_ref.push_back(6.0);
+        speed_ref.push_back(10.0);
     }
     SystemModel system(dt, wheel_base);
     system.setState(sx, sy, yaw_ref.front(), 0.0);
-    Eigen::Vector4d state_weight;
-    Eigen::Vector2d input_weight;
 
-    state_weight << 3.0, 3.0, 1.0, 0.01;
+    Eigen::Vector4d state_weight, state_lowerbound, state_upperbound;
+    Eigen::Vector2d input_weight, input_lowerbound, input_upperbound;
+
+    state_weight << 3.0, 3.0, 1.0, 0.1;
     input_weight << 0.05, 0.05;
-    MPC mpc(system, state_weight, input_weight, prediction_horizon, dt);
+    state_lowerbound << -1.0e19, -1.0e19, -M_PI, -0;
+    state_upperbound << 1.0e19, 1.0e19, M_PI, 15;
+    input_lowerbound << -M_PI_4, -2.0;
+    input_upperbound << M_PI_4, 2.0;
+
+    MPC mpc(system,
+            state_weight,
+            input_weight,
+            state_lowerbound,
+            state_upperbound,
+            input_lowerbound,
+            input_upperbound,
+            prediction_horizon,
+            dt);
 
     std::vector<double> path_x;
     std::vector<double> path_y;
@@ -128,8 +142,8 @@ int main() {
     Eigen::Vector4d state(sx, sy, 0, 0);
     std::map<std::string, std::string> options;
     options["color"] = "black";
-    options["linestyle"] = "none";  // No line (just markers)
-    options["marker"] = "x";        // Use 'x' markers
+    options["linestyle"] = "none";
+    options["marker"] = "x";
     options["markersize"] = "10";
     while (std::hypot(gx - state[0], gy - state[1]) >= 0.001) {
         if (x_ref.size() - target_point_idx <= prediction_horizon) break;
