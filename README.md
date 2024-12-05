@@ -83,7 +83,8 @@ make
 ./mpc_example 
 ```
 #### Result
-![mpc](docs/assets/mpc/mpc.gif)
+![mpc1](docs/assets/mpc/mpc.gif)
+![mpc2](docs/assets/mpc/mpc2.gif)
 
 
 ## WIP ...
@@ -92,4 +93,4 @@ make
 - [X] **Improve visualization** with additional metrics (e.g., control inputs, predicted trajectory).
 - [X] **Update ReadMe** for advanced simulations.
 - [ ] **Implement obstacle avoidance** in the MPC formulation.
-- [  ] **Add support for System obstacles** to enhance realism.
+- [ ] **Add support for System obstacles** to enhance realism.
