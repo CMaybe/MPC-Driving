@@ -87,7 +87,7 @@ void plot_car(double x, double y, double yaw) {
 
 int main() {
     std::vector<double> x = {0.0, 10.0, 20.0, 25.0, 30.0, 40.0};
-    std::vector<double> y = {0.0, 5.0, 0.0, 0.0, 0.0, 0.0};
+    std::vector<double> y = {0.0, 5.0, 0.0, 0.0, -3.0, 0.0};
     CubicSpline2D sp(x, y);
 
     double sx = 0.0;
@@ -135,6 +135,7 @@ int main() {
         result_x.push_back(state[0]);
         result_y.push_back(state[1]);
         plt::cla();
+        plt::plot(x, y, "xb");
         plt::plot(result_x, result_y, "ob");
         plt::plot(path_x, path_y, "xr");
         plt::plot(x_ref, y_ref, "-r");
