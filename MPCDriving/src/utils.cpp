@@ -75,3 +75,11 @@ Eigen::MatrixXd calDesiredTrajectory(const Eigen::Vector4d& cur_state_vec,
 
     return traj_des;
 }
+
+std::vector<double> slice(const std::vector<double>& vec, size_t start, size_t end) {
+    if (start >= vec.size() || start > end) {
+        return {};
+    }
+    end = std::min(end, vec.size());
+    return std::vector<double>(vec.begin() + start, vec.begin() + end);
+}

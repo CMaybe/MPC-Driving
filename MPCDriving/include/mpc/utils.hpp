@@ -20,4 +20,6 @@ Eigen::MatrixXd calDesiredTrajectory(const Eigen::Vector4d& cur_state_vec,
                                      int H,
                                      double dt,
                                      double desired_speed);
+
+std::vector<double> slice(const std::vector<double>& vec, size_t start, size_t end);
 #endif  // UTILS_HPP
