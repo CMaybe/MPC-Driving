@@ -3,6 +3,8 @@
 #include "mpc/Optimizer.hpp"
 
 FG_eval::FG_eval(const SystemModel& system,
+                 const Eigen::Vector4d& state_weight,
+                 const Eigen::Vector2d& input_weight,
                  const std::vector<double>& x_ref,
                  const std::vector<double>& y_ref,
                  const std::vector<double>& yaw_ref,
@@ -15,6 +17,8 @@ FG_eval::FG_eval(const SystemModel& system,
                  const size_t& steer_idx,
                  const size_t& acc_idx)
     : system_(system)
+    , state_weight_(state_weight)
+    , input_weight_(input_weight)
     , x_ref_(x_ref)
     , y_ref_(y_ref)
     , yaw_ref_(yaw_ref)
@@ -36,16 +40,16 @@ void FG_eval::operator()(ADvector& fg, const ADvector& vars) {
 
     // The part of the cost based on the reference state.
     for (size_t t = 0; t < prediction_horizon_; ++t) {
-        fg[0] += 5.0 * CppAD::pow(vars[x_idx_ + t] - x_ref_[t], 2);
-        fg[0] += 5.0 * CppAD::pow(vars[y_idx_ + t] - y_ref_[t], 2);
-        fg[0] += 2.0 * CppAD::pow(vars[yaw_idx_ + t] - yaw_ref_[t], 2);
-        fg[0] += 0.5 * CppAD::pow(vars[velocity_idx_ + t] - velocity_ref_[t], 2);
+        fg[0] += state_weight_[0] * CppAD::pow(vars[x_idx_ + t] - x_ref_[t], 2);
+        fg[0] += state_weight_[1] * CppAD::pow(vars[y_idx_ + t] - y_ref_[t], 2);
+        fg[0] += state_weight_[2] * CppAD::pow(vars[yaw_idx_ + t] - yaw_ref_[t], 2);
+        fg[0] += state_weight_[3] * CppAD::pow(vars[velocity_idx_ + t] - velocity_ref_[t], 2);
     }
 
     // Minimize the use of actuators.
     for (size_t t = 0; t < prediction_horizon_ - 1; ++t) {
-        fg[0] += 0.01 * CppAD::pow(vars[steer_idx_ + t], 2);
-        fg[0] += 0.01 * CppAD::pow(vars[acc_idx_ + t], 2);
+        fg[0] += input_weight_[0] * CppAD::pow(vars[steer_idx_ + t], 2);
+        fg[0] += input_weight_[1] * CppAD::pow(vars[acc_idx_ + t], 2);
     }
 
     //
@@ -89,8 +93,22 @@ void FG_eval::operator()(ADvector& fg, const ADvector& vars) {
     }
 }
 
-Optimizer::Optimizer(const SystemModel& system, const size_t& prediction_horizon)
-    : system_(system), prediction_horizon_(prediction_horizon) {
+Optimizer::Optimizer(const SystemModel& system,
+                     const Eigen::Vector4d& state_weight,
+                     const Eigen::Vector2d& input_weight,
+                     const Eigen::Vector4d& state_lowerbound,
+                     const Eigen::Vector4d& state_upperbound,
+                     const Eigen::Vector2d& input_lowerbound,
+                     const Eigen::Vector2d& input_upperbound,
+                     const size_t& prediction_horizon)
+    : system_(system)
+    , state_weight_(state_weight)
+    , input_weight_(input_weight)
+    , state_lowerbound_(state_lowerbound)
+    , state_upperbound_(state_upperbound)
+    , input_lowerbound_(input_lowerbound)
+    , input_upperbound_(input_upperbound)
+    , prediction_horizon_(prediction_horizon) {
     x_idx_ = 0;
     y_idx_ = x_idx_ + prediction_horizon;
     yaw_idx_ = y_idx_ + prediction_horizon;
@@ -135,29 +153,29 @@ std::vector<double> Optimizer::Solve(const std::vector<double>& x_ref,
     // Set all non-actuators upper and lowerlimits
     // to the max negative and positive values.
     for (int i = x_idx_; i < y_idx_; ++i) {
-        vars_lowerbound[i] = -1.0e19;
-        vars_upperbound[i] = 1.0e19;
+        vars_lowerbound[i] = state_lowerbound_[0];
+        vars_upperbound[i] = state_upperbound_[0];
     }
     for (int i = y_idx_; i < yaw_idx_; ++i) {
-        vars_lowerbound[i] = -1.0e19;
-        vars_upperbound[i] = 1.0e19;
+        vars_lowerbound[i] = state_lowerbound_[1];
+        vars_upperbound[i] = state_upperbound_[1];
     }
     for (int i = yaw_idx_; i < velocity_idx_; ++i) {
-        vars_lowerbound[i] = -M_PI;
-        vars_upperbound[i] = M_PI;
+        vars_lowerbound[i] = state_lowerbound_[2];
+        vars_upperbound[i] = state_upperbound_[2];
     }
     for (int i = velocity_idx_; i < steer_idx_; ++i) {
-        vars_lowerbound[i] = 0;
-        vars_upperbound[i] = 20;
+        vars_lowerbound[i] = state_lowerbound_[3];
+        vars_upperbound[i] = state_upperbound_[3];
     }
 
     for (int i = steer_idx_; i < acc_idx_; ++i) {
-        vars_lowerbound[i] = -M_PI_4;
-        vars_upperbound[i] = M_PI_4;
+        vars_lowerbound[i] = input_lowerbound_[0];
+        vars_upperbound[i] = input_upperbound_[0];
     }
     for (int i = acc_idx_; i < n_vars; ++i) {
-        vars_lowerbound[i] = -4.0;
-        vars_upperbound[i] = 1.0;
+        vars_lowerbound[i] = input_lowerbound_[1];
+        vars_upperbound[i] = input_upperbound_[1];
     }
 
     Dvector constraints_lowerbound(n_constraints);
@@ -178,6 +196,8 @@ std::vector<double> Optimizer::Solve(const std::vector<double>& x_ref,
 
     // Object that computes objective and constraints
     FG_eval fg_eval(system_,
+                    state_weight_,
+                    input_weight_,
                     x_ref,
                     y_ref,
                     yaw_ref,

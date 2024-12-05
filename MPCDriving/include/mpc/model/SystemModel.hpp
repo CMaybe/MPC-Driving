@@ -9,7 +9,7 @@
 class SystemModel {
 public:
     SystemModel() = default;
-    SystemModel(double dt);
+    SystemModel(const double& dt, const double& wheel_base_ = 3.5);
     SystemModel(const SystemModel& other);
 
     void setState(double x, double y, double yaw, double velocity);
@@ -32,8 +32,7 @@ public:
 private:
     void updateDiscretizedModel();
 
-    double dt_;
-    const double wheel_base_ = 3.5;
+    double dt_, wheel_base_;
 
     Eigen::Matrix<double, 4, 4> A_, Ad_;
     Eigen::Matrix<double, 4, 2> B_, Bd_;

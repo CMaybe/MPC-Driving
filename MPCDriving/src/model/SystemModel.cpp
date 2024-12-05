@@ -2,9 +2,10 @@
 
 #include <iostream>
 
-SystemModel::SystemModel(double dt) : dt_(dt) {}
+SystemModel::SystemModel(const double& dt, const double& wheel_base)
+    : dt_(dt), wheel_base_(wheel_base) {}
 SystemModel::SystemModel(const SystemModel& other)
-    : dt_(other.dt_), Bd_(other.Bd_), state_(other.state_) {}
+    : dt_(other.dt_), wheel_base_(other.wheel_base_), state_(other.state_) {}
 
 void SystemModel::setState(double x, double y, double yaw, double velocity) {
     state_ = State(x, y, yaw, velocity);

@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 
 #include "mpc/MPC.hpp"
+#include "mpc/Utils.hpp"
 #include "mpc/math/CubicSpline2D.hpp"
 
 #include <Eigen/Core>
@@ -15,26 +16,18 @@
 using CppAD::AD;
 namespace plt = matplotlibcpp;
 
-std::vector<double> slice(const std::vector<double>& vec, size_t start, size_t end) {
-    if (start >= vec.size() || start > end) {
-        return {};
-    }
-    end = std::min(end, vec.size());
-    return std::vector<double>(vec.begin() + start, vec.begin() + end);
-}
-
 void plot_car(double x, double y, double yaw) {
-    const double L = 3.5;
-    const double W = 2.0;
-    const double WD = 1.0;
-    const double WW = 0.5;
+    const double length = 3.5;
+    const double width = 2.0;
+    const double wheel_diameter = 1.0;
+    const double wheel_width = 0.5;
 
     Eigen::Matrix2d rotate;
     rotate << std::cos(yaw), -std::sin(yaw), std::sin(yaw), std::cos(yaw);
 
     Eigen::MatrixXd car(2, 5);
-    car.row(0) << -L / 2, -L / 2, L / 2, L / 2, -L / 2;
-    car.row(1) << W / 2, -W / 2, -W / 2, W / 2, W / 2;
+    car.row(0) << -length / 2, -length / 2, length / 2, length / 2, -length / 2;
+    car.row(1) << width / 2, -width / 2, -width / 2, width / 2, width / 2;
     car = rotate * car;
     car.row(0).array() += x;
     car.row(1).array() += y;
@@ -50,11 +43,13 @@ void plot_car(double x, double y, double yaw) {
     plt::plot(car_x, car_y, "-k");
 
     Eigen::MatrixXd rear_wheel(2, 5), front_wheel;
-    rear_wheel.row(0) << -WD / 2, -WD / 2, WD / 2, WD / 2, -WD / 2;
-    rear_wheel.row(1) << WW / 2, -WW / 2, -WW / 2, WW / 2, WW / 2;
+    rear_wheel.row(0) << -wheel_diameter / 2, -wheel_diameter / 2, wheel_diameter / 2,
+        wheel_diameter / 2, -wheel_diameter / 2;
+    rear_wheel.row(1) << wheel_width / 2, -wheel_width / 2, -wheel_width / 2, wheel_width / 2,
+        wheel_width / 2;
     front_wheel = rear_wheel;
 
-    rear_wheel.row(0).array() -= L / 2;
+    rear_wheel.row(0).array() -= length / 2;
     rear_wheel = rotate * rear_wheel;
     rear_wheel.row(0).array() += x;
     rear_wheel.row(1).array() += y;
@@ -67,7 +62,7 @@ void plot_car(double x, double y, double yaw) {
         rear_wheel_y[i] = rear_wheel(1, i);
     }
 
-    front_wheel.row(0).array() += L / 2;
+    front_wheel.row(0).array() += length / 2;
     front_wheel = rotate * front_wheel;
     front_wheel.row(0).array() += x;
     front_wheel.row(1).array() += y;
@@ -90,12 +85,14 @@ int main() {
     std::vector<double> y = {0.0, 5.0, 0.0, 0.0, -3.0, 0.0};
     CubicSpline2D sp(x, y);
 
-    double sx = 0.0;
+    double sx = -5.0;
+    double gx = 40.0;
     double sy = -5;
+    double gy = 0.0;
 
     double dt = 0.1;
-    double wheel_base = 3.5;
-    size_t prediction_horizon = 20;
+    double wheel_base = 3.0;
+    size_t prediction_horizon = 10;
 
     std::vector<double> s;
     std::vector<double> x_ref, y_ref, yaw_ref, speed_ref;
@@ -109,12 +106,30 @@ int main() {
         x_ref.push_back(tx);
         y_ref.push_back(ty);
         yaw_ref.push_back(sp.calculateYaw(i_s));
-        speed_ref.push_back(5.0);
+        speed_ref.push_back(10.0);
     }
-    SystemModel system(dt);
+    SystemModel system(dt, wheel_base);
     system.setState(sx, sy, yaw_ref.front(), 0.0);
-    MPC mpc(system, prediction_horizon, dt);
-    Eigen::Vector2d input;
+
+    Eigen::Vector4d state_weight, state_lowerbound, state_upperbound;
+    Eigen::Vector2d input_weight, input_lowerbound, input_upperbound;
+
+    state_weight << 3.0, 3.0, 1.0, 0.1;
+    input_weight << 0.05, 0.05;
+    state_lowerbound << -1.0e19, -1.0e19, -M_PI, -0;
+    state_upperbound << 1.0e19, 1.0e19, M_PI, 15;
+    input_lowerbound << -M_PI_4, -2.0;
+    input_upperbound << M_PI_4, 2.0;
+
+    MPC mpc(system,
+            state_weight,
+            input_weight,
+            state_lowerbound,
+            state_upperbound,
+            input_lowerbound,
+            input_upperbound,
+            prediction_horizon,
+            dt);
 
     std::vector<double> path_x;
     std::vector<double> path_y;
@@ -123,22 +138,29 @@ int main() {
     std::vector<double> result_y;
 
     plt::figure_size(1440, 1080);
-
-    for (int i = 0; i < x_ref.size() - prediction_horizon; i++) {
-        mpc.run(slice(x_ref, i, x_ref.size()),
-                slice(y_ref, i, y_ref.size()),
-                slice(yaw_ref, i, yaw_ref.size()),
-                slice(speed_ref, 0, speed_ref.size()));
-        Eigen::Vector4d state = mpc.getState();
+    int target_point_idx = 0;
+    Eigen::Vector4d state(sx, sy, 0, 0);
+    std::map<std::string, std::string> options;
+    options["color"] = "black";
+    options["linestyle"] = "none";
+    options["marker"] = "x";
+    options["markersize"] = "10";
+    while (std::hypot(gx - state[0], gy - state[1]) >= 0.001) {
+        if (x_ref.size() - target_point_idx <= prediction_horizon) break;
+        mpc.run(slice(x_ref, target_point_idx, x_ref.size()),
+                slice(y_ref, target_point_idx, y_ref.size()),
+                slice(yaw_ref, target_point_idx, yaw_ref.size()),
+                slice(speed_ref, target_point_idx, speed_ref.size()));
+        target_point_idx = getClosestPointOnPath(x_ref, y_ref, state, target_point_idx, 5);
         path_x = mpc.getPredictedX();
         path_y = mpc.getPredictedY();
         result_x.push_back(state[0]);
         result_y.push_back(state[1]);
         plt::cla();
-        plt::plot(x, y, "xb");
+        plt::plot(x, y, options);
+        state = mpc.getState();
         plt::plot(result_x, result_y, "ob");
         plt::plot(path_x, path_y, "xr");
-        plt::plot(x_ref, y_ref, "-r");
         plot_car(state[0], state[1], state[2]);
         plt::axis("equal");
         plt::xlim(-10, 50);

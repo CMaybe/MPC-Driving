@@ -6,10 +6,24 @@
 
 using namespace std;
 
-MPC::MPC(const SystemModel& system, const size_t& prediction_horizon, const double& dt)
+MPC::MPC(const SystemModel& system,
+         const Eigen::Vector4d& state_weight,
+         const Eigen::Vector2d& input_weight,
+         const Eigen::Vector4d& state_lowerbound,
+         const Eigen::Vector4d& state_upperbound,
+         const Eigen::Vector2d& input_lowerbound,
+         const Eigen::Vector2d& input_upperbound,
+         const size_t& prediction_horizon,
+         const double& dt)
     : num_state_(4)
     , num_input_(2)
     , system_(system)
+    , state_weight_(state_weight)
+    , input_weight_(input_weight)
+    , state_lowerbound_(state_lowerbound)
+    , state_upperbound_(state_upperbound)
+    , input_lowerbound_(input_lowerbound)
+    , input_upperbound_(input_upperbound)
     , prediction_horizon_(prediction_horizon)
     , dt_(dt) {
     predicted_x_.resize(prediction_horizon);
@@ -24,7 +38,14 @@ void MPC::run(const std::vector<double>& path_x,
               const std::vector<double>& path_y,
               const std::vector<double>& path_yaw,
               const std::vector<double>& path_velocity) {
-    Optimizer optimizer(system_, prediction_horizon_);
+    Optimizer optimizer(system_,
+                        state_weight_,
+                        input_weight_,
+                        state_lowerbound_,
+                        state_upperbound_,
+                        input_lowerbound_,
+                        input_upperbound_,
+                        prediction_horizon_);
     auto vars = optimizer.Solve(path_x, path_y, path_yaw, path_velocity);
     for (size_t i = 0; i < prediction_horizon_; i++) {
         predicted_x_[i] = vars[i];
