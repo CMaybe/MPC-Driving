@@ -44,8 +44,8 @@ Eigen::Vector4d MPC::getOutput() const { return output_; }
 Eigen::Vector2d MPC::getInput() const { return input_; }
 
 std::vector<double> MPC::getPredictedX() const { return predicted_x_; }
-std::vector<double> MPC::getPredictedY() const { return predicted_x_; }
-std::vector<double> MPC::getPredictedYaw() const { return predicted_x_; }
-std::vector<double> MPC::getPredictedVelocoity() const { return predicted_x_; }
-std::vector<double> MPC::getPredictedSteer() const { return predicted_x_; }
-std::vector<double> MPC::getPredictedAcc() const { return predicted_x_; }
+std::vector<double> MPC::getPredictedY() const { return predicted_y_; }
+std::vector<double> MPC::getPredictedYaw() const { return predicted_yaw_; }
+std::vector<double> MPC::getPredictedVelocoity() const { return predicted_velocity_; }
+std::vector<double> MPC::getPredictedSteer() const { return predicted_steer_; }
+std::vector<double> MPC::getPredictedAcc() const { return predicted_acc_; }
