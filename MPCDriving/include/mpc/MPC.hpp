@@ -13,6 +13,10 @@ public:
     MPC(const SystemModel& system,
         const Eigen::Vector4d& state_weight,
         const Eigen::Vector2d& input_weight,
+        const Eigen::Vector4d& state_lowerbound,
+        const Eigen::Vector4d& state_upperbound,
+        const Eigen::Vector2d& input_lowerbound,
+        const Eigen::Vector2d& input_upperbound,
         const size_t& prediction_horizon,
         const double& dt);
 
@@ -38,14 +42,10 @@ private:
 
     SystemModel system_;
 
-    Eigen::Vector4d state_weight_;
-    Eigen::Vector2d input_weight_;
+    Eigen::Vector4d state_weight_, state_lowerbound_, state_upperbound_;
+    Eigen::Vector2d input_weight_, input_lowerbound_, input_upperbound_;
 
-    std::vector<double> predicted_x_;
-    std::vector<double> predicted_y_;
-    std::vector<double> predicted_yaw_;
-    std::vector<double> predicted_velocity_;
-    std::vector<double> predicted_steer_;
-    std::vector<double> predicted_acc_;
+    std::vector<double> predicted_x_, predicted_y_, predicted_yaw_, predicted_velocity_,
+        predicted_steer_, predicted_acc_;
 };
 #endif  // MPC_HPP

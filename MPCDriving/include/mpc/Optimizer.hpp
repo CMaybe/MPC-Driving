@@ -55,6 +55,10 @@ public:
     Optimizer(const SystemModel& system,
               const Eigen::Vector4d& state_weight,
               const Eigen::Vector2d& input_weight,
+              const Eigen::Vector4d& state_lowerbound,
+              const Eigen::Vector4d& state_upperbound,
+              const Eigen::Vector2d& input_lowerbound,
+              const Eigen::Vector2d& input_upperbound,
               const size_t& prediction_horizon);
 
     std::vector<double> Solve(const std::vector<double>& x_ref,
@@ -64,8 +68,9 @@ public:
 
 private:
     SystemModel system_;
-    Eigen::Vector4d state_weight_;
-    Eigen::Vector2d input_weight_;
+    Eigen::Vector4d state_weight_, state_lowerbound_, state_upperbound_;
+    Eigen::Vector2d input_weight_, input_lowerbound_, input_upperbound_;
+
     size_t prediction_horizon_;
     size_t x_idx_, y_idx_, yaw_idx_, velocity_idx_;
     size_t steer_idx_, acc_idx_;
