@@ -17,13 +17,28 @@ public:
              const std::vector<double>& path_yaw,
              const std::vector<double>& path_velocity);
 
-    Eigen::Vector4d getOutput() const;
+    std::vector<double> getPredictedX() const;
+    std::vector<double> getPredictedY() const;
+    std::vector<double> getPredictedYaw() const;
+    std::vector<double> getPredictedVelocoity() const;
+    std::vector<double> getPredictedSteer() const;
+    std::vector<double> getPredictedAcc() const;
+    Eigen::Vector4d getState() const;
+    Eigen::Vector2d getInput() const;
 
 private:
+    Eigen::Vector4d state_;
+    Eigen::Vector2d input_;
     size_t num_state_, num_input_, num_output_, prediction_horizon_;
     double dt_;
-    Eigen::Vector4d output_;
 
     SystemModel system_;
+
+    std::vector<double> predicted_x_;
+    std::vector<double> predicted_y_;
+    std::vector<double> predicted_yaw_;
+    std::vector<double> predicted_velocity_;
+    std::vector<double> predicted_steer_;
+    std::vector<double> predicted_acc_;
 };
 #endif  // MPC_HPP

@@ -64,30 +64,41 @@ To set up the project locally, follow these steps:
 - **Eigen**: Install Eigen for matrix operations. You can use your package manager (e.g., `apt`, `brew`) or download it from the [official site](https://eigen.tuxfamily.org/).
 
 ## Examples
-
+### 1.Spline
 An example using **CubicSpline** for trajectory generation is included in the repository. You can find it in the `examples` directory:
 
 ```bash
-cd MPCDriving/example
+cd MPCDriving/example/spline
 mkdir build && cd build
 cmake ..
 make
-
 # run
-./spline_planner 
+./spline_example 
 ```
+#### Result
+![figure1](docs/assets/spline/figure1.png)
 
-### Result
 
-![figure1](docs/assets/figure1.png)
-![figure2](docs/assets/figure2.png)
-![figure3](docs/assets/figure3.png)
+
+### 1.Spline
+An example using **CubicSpline** for trajectory generation is included in the repository. You can find it in the `examples` directory:
+
+```bash
+cd MPCDriving/example/mpc
+mkdir build && cd build
+cmake ..
+make
+# run
+./mpc_example 
+```
+#### Result
+![mpc](docs/assets/mpc/mpc.gif)
 
 
 ## WIP ...
 ## TODO
+- [X] **Optimize computational efficiency** for real-time performance.
+- [X] **Improve visualization** with additional metrics (e.g., control inputs, predicted trajectory).
+- [X] **Update ReadMe** for advanced simulations.
 - [ ] **Implement obstacle avoidance** in the MPC formulation.
-- [ ] **Improve visualization** with additional metrics (e.g., control inputs, predicted trajectory).
-- [ ] **Add support for System obstacles** to enhance realism.
-- [ ] **Optimize computational efficiency** for real-time performance.
-- [ ] **Update ReadMe** for advanced simulations.
+- [  ] **Add support for System obstacles** to enhance realism.
