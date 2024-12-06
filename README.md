@@ -92,5 +92,6 @@ make
 - [X] **Optimize computational efficiency** for real-time performance.
 - [X] **Improve visualization** with additional metrics (e.g., control inputs, predicted trajectory).
 - [X] **Update ReadMe** for advanced simulations.
+- [ ] **Implement ROS2 Wrapper** for example
 - [ ] **Implement obstacle avoidance** in the MPC formulation.
 - [ ] **Add support for System obstacles** to enhance realism.
