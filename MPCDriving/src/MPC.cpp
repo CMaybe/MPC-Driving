@@ -57,6 +57,15 @@ void MPC::run(const std::vector<double>& path_x,
     }
     state_ << predicted_x_[1], predicted_y_[1], predicted_yaw_[1], predicted_velocity_[1];
     input_ << predicted_steer_[0], predicted_acc_[0];
+}
+
+void MPC::update() {
+    system_.updateModel(state_[2], state_[3], input_[0]);
+    system_.updateState(state_, input_);
+}
+void MPC::update(const Eigen::Vector4d& state, const Eigen::Vector2d& input) {
+    state_ = state;
+    input_ = input;
     system_.updateModel(state_[2], state_[3], input_[0]);
     system_.updateState(state_, input_);
 }

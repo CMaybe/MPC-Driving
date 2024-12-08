@@ -114,7 +114,7 @@ int main() {
     Eigen::Vector4d state_weight, state_lowerbound, state_upperbound;
     Eigen::Vector2d input_weight, input_lowerbound, input_upperbound;
 
-    state_weight << 3.0, 3.0, 1.0, 0.1;
+    state_weight << 1.0, 1.0, 1.0, 0.1;
     input_weight << 0.05, 0.05;
     state_lowerbound << -1.0e19, -1.0e19, -M_PI, -0;
     state_upperbound << 1.0e19, 1.0e19, M_PI, 15;
@@ -151,6 +151,7 @@ int main() {
                 slice(y_ref, target_point_idx, y_ref.size()),
                 slice(yaw_ref, target_point_idx, yaw_ref.size()),
                 slice(speed_ref, target_point_idx, speed_ref.size()));
+        mpc.update();
         target_point_idx = getClosestPointOnPath(x_ref, y_ref, state, target_point_idx, 5);
         path_x = mpc.getPredictedX();
         path_y = mpc.getPredictedY();

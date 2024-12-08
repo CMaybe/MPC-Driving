@@ -24,6 +24,8 @@ public:
              const std::vector<double>& path_y,
              const std::vector<double>& path_yaw,
              const std::vector<double>& path_velocity);
+    void update(const Eigen::Vector4d& state, const Eigen::Vector2d& input);
+    void update();
 
     std::vector<double> getPredictedX() const;
     std::vector<double> getPredictedY() const;
