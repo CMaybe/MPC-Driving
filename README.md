@@ -1,5 +1,5 @@
 # MPC-Driving: 2D Car Driving Simulation with Model Predictive Control (MPC)
-
+[![build-test](https://github.com/CMaybe/MPC-Driving/actions/workflows/mpc_driving.yaml/badge.svg)](https://github.com/CMaybe/MPC-Driving/actions/workflows/mpc_driving.yaml)
 
 This project implements a simulation of a car driving in a 2D environment using **Model Predictive Control (MPC)** for trajectory planning and control. Visualization is handled via **matplotlibcpp**, providing real-time graphical feedback.
 
@@ -38,6 +38,11 @@ If you prefer to access the container directly, you can use the following comman
 ```bash
 xhost +local:docker
 docker exec -it dev-mpc-driving /bin/bash
+```
+
+We also prepared Docker image [dev-mpc-driving](https://github.com/CMaybe/MPC-Driving/pkgs/container/dev-mpc-driving) for the developers. 
+``` bash
+docker pull ghcr.io/cmaybe/dev-mpc-driving:buildcache
 ```
 
 ## Option2: Installation
