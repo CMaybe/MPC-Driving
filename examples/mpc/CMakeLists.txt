@@ -11,37 +11,23 @@ include(CMakePackageConfigHelpers)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+message("${CMAKE_PREFIX_PATH}")
+
 # Specify Python version (adjust if needed)
-find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-find_package(Python3 COMPONENTS NumPy)
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED QUIET)
+find_package(Python3 COMPONENTS NumPy QUIET)
 find_package(Eigen3 3.4 CONFIG REQUIRED QUIET)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(IPOPT REQUIRED ipopt)
+find_package(mpc_driving REQUIRED)
 
-set(SOURCES
-mpc_example.cpp	
-../../MPCDriving/src/math/CubicSpline.cpp	
-../../MPCDriving/src/math/CubicSpline2D.cpp
-../../MPCDriving/src/model/State.cpp	
-../../MPCDriving/src/model/SystemModel.cpp
-../../MPCDriving/src/MPC.cpp
-../../MPCDriving/src/Optimizer.cpp
-../../MPCDriving/src/Utils.cpp
-)
+add_executable(${PROJECT_NAME} mpc_example.cpp)
 
-add_executable(${PROJECT_NAME} ${SOURCES})
-# Add executable target
-target_include_directories(${PROJECT_NAME} PRIVATE 
-${CMAKE_CURRENT_SOURCE_DIR}/../../MPCDriving/include
-${IPOPT_INCLUDE_DIRS})
 
-# Link libraries (Python3 and Boost system/filesystem)
 target_link_libraries(${PROJECT_NAME}
 	Eigen3::Eigen
 	Python3::Python
 	Python3::Module
 	Python3::NumPy
-	${IPOPT_LIBRARIES}
+	mpc_driving
 )
 
 # If using matplotlibcpp, ensure that Python is available for linking

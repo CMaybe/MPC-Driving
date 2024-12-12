@@ -1,0 +1,23 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_package(Eigen3 3.4 CONFIG REQUIRED QUIET)
+if(NOT TARGET Eigen3::Eigen)
+  message(FATAL_ERROR "Eigen3 not found. Ensure it is installed and accessible.")
+endif()
+
+find_package(PkgConfig REQUIRED)
+if(PkgConfig_FOUND)
+  pkg_check_modules(IPOPT REQUIRED ipopt)
+  if(NOT IPOPT_FOUND)
+    message(FATAL_ERROR "IPOPT library not found. Please install IPOPT and ensure pkg-config is configured correctly.")
+  endif()
+else()
+  message(FATAL_ERROR "PkgConfig is required but not found.")
+endif()
+
+set_and_check(mpc_driving_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@")
+set_and_check(mpc_driving_LIB_DIRS "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@")
+
+set(mpc_driving_FOUND TRUE) 
+include("${mpc_driving_LIB_DIRS}/cmake/mpc_driving/mpc_driving-targets.cmake")

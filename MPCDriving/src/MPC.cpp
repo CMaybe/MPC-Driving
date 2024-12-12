@@ -1,5 +1,5 @@
-#include "mpc/MPC.hpp"
-#include "mpc/Optimizer.hpp"
+#include "mpc_driving/MPC.hpp"
+#include "mpc_driving/Optimizer.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -15,9 +15,7 @@ MPC::MPC(const SystemModel& system,
          const Eigen::Vector2d& input_upperbound,
          const size_t& prediction_horizon,
          const double& dt)
-    : num_state_(4)
-    , num_input_(2)
-    , system_(system)
+    : system_(system)
     , state_weight_(state_weight)
     , input_weight_(input_weight)
     , state_lowerbound_(state_lowerbound)

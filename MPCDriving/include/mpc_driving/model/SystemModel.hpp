@@ -1,7 +1,7 @@
 #ifndef System_MODEL_HPP
 #define System_MODEL_HPP
 
-#include "mpc/model/State.hpp"
+#include "mpc_driving/model/State.hpp"
 
 #include <Eigen/Dense>
 #include <cmath>
