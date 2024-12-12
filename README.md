@@ -50,28 +50,24 @@ To set up the project locally, follow these steps:
    ```
 
 ### 2. Install the required dependencies
-- **C++ Compiler**: Ensure you have a **C++17 compatible compiler** installed. Examples include GCC 7.1+ or Clang 5.0+.
+- **C++ Compiler**: Ensure you have a **C++17 compatible compiler** installed.
 - **matplotlibcpp**: Follow the [installation guide](https://github.com/lava/matplotlib-cpp) to set it up.
 - **Eigen**: Install Eigen for matrix operations. You can use your package manager (e.g., `apt`, `brew`) or download it from the [official site](https://eigen.tuxfamily.org/).
 - **Ipopt** : Ipopt (Interior Point OPTimizer) is a popular optimization solver used for large-scale nonlinear optimization problems. download it from [official_site](https://github.com/coin-or/Ipopt).
-## Examples
-### 1.Spline
-An example using **CubicSpline** for trajectory generation is included in the repository. You can find it in the `examples` directory:
 
+### Build and install `mpc_driving`
+**Build**  
 ```bash
-cd MPCDriving/examples/spline
-mkdir build && cd build
-cmake ..
-make
-# run
-./spline_example 
+mkdir MPCDriving/build && cd MPCDriving/build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j
 ```
-#### Result
-![figure1](docs/assets/spline/figure1.png)
+**Install**
+```bash
+sudo make install # default prefix is /usr/local
+```
 
-
-
-### 2.MPC
+## Examples
 An example using **MPC** for path following is included in the repository. You can find it in the `examples` directory:
 
 ```bash
