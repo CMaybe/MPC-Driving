@@ -42,7 +42,7 @@ docker exec -it dev-mpc-driving /bin/bash
 
 We also prepared Docker image [dev-mpc-driving](https://github.com/CMaybe/MPC-Driving/pkgs/container/dev-mpc-driving) for the developers. 
 ``` bash
-docker pull ghcr.io/cmaybe/dev-mpc-driving:buildcache
+docker pull ghcr.io/cmaybe/dev-mpc-driving:latest
 ```
 
 ## Option2: Installation
