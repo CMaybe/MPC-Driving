@@ -1,12 +1,12 @@
 {
 	"containerEnv": {
 		"DISPLAY": "${localEnv:DISPLAY}",
-		"USER_NAME" : "${localEnv:USER}"
+		"USER_NAME": "${localEnv:USER}"
 	},
 	"build": {
-		"dockerfile": "../Dockerfile",
+		"dockerfile": "./Dockerfile",
 		"args": {
-			"USER_NAME" : "${localEnv:USER}"
+			"USER_NAME": "${localEnv:USER}"
 		}
 	},
 	"name": "dev-mpc-driving",
@@ -15,13 +15,12 @@
 		"source=/home/${localEnv:USER}/.ssh/,target=/home/${localEnv:USER}/.ssh/,type=bind",
 		"source=/dev,target=/dev,type=bind"
 	],
-	
 	"workspaceFolder": "/home/${localEnv:USER}/mpc-driving",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/home/${localEnv:USER}/mpc-driving,type=bind",
-
 	"runArgs": [
-		"--name", "dev-mpc-driving",
-		"--cap-add=SYS_PTRACE",	
+		"--name",
+		"dev-mpc-driving",
+		"--cap-add=SYS_PTRACE",
 		"--net=host",
 		"--privileged",
 		"--security-opt=seccomp=unconfined"
