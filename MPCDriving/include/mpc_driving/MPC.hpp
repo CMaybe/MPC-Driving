@@ -4,7 +4,7 @@
 #include <Eigen/Dense>
 #include <vector>
 
-#include "mpc/model/SystemModel.hpp"
+#include "mpc_driving/model/SystemModel.hpp"
 
 class MPC {
 public:
@@ -39,7 +39,7 @@ public:
 private:
     Eigen::Vector4d state_;
     Eigen::Vector2d input_;
-    size_t num_state_, num_input_, num_output_, prediction_horizon_;
+    size_t num_output_, prediction_horizon_;
     double dt_;
 
     SystemModel system_;

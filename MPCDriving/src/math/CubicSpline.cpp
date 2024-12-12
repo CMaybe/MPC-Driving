@@ -1,4 +1,4 @@
-#include "mpc/math/CubicSpline.hpp"
+#include "mpc_driving/math/CubicSpline.hpp"
 
 #include <algorithm>
 #include <cassert>

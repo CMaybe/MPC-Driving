@@ -3,9 +3,9 @@
 
 #define _USE_MATH_DEFINES
 
-#include "mpc/math/CubicSpline2D.hpp"
-#include "mpc/model/State.hpp"
-#include "mpc/model/SystemModel.hpp"
+#include "mpc_driving/math/CubicSpline2D.hpp"
+#include "mpc_driving/model/State.hpp"
+#include "mpc_driving/model/SystemModel.hpp"
 
 #include <Eigen/Dense>
 

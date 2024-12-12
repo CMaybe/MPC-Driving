@@ -1,7 +1,7 @@
 #ifndef CUBIC_SPLINE_2D_HPP
 #define CUBIC_SPLINE_2D_HPP
 
-#include "mpc/math/CubicSpline.hpp"
+#include "mpc_driving/math/CubicSpline.hpp"
 
 #include <vector>
 
