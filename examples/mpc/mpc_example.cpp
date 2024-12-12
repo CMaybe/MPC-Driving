@@ -1,8 +1,8 @@
 #define _USE_MATH_DEFINES
 
-#include "mpc/MPC.hpp"
-#include "mpc/Utils.hpp"
-#include "mpc/math/CubicSpline2D.hpp"
+#include <mpc_driving/MPC.hpp>
+#include <mpc_driving/Utils.hpp>
+#include <mpc_driving/math/CubicSpline2D.hpp>
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
