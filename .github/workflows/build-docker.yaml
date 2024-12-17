@@ -2,10 +2,11 @@ name: build-docker
 
 on:
   push:
-    branches: -*-
     paths: 
       - 'DockerDev'
       - '.github/workflows/build-docker.yaml'
+  pull_request:
+    branches: [ main ]
 
 env:
   REGISTRY: ghcr.io/cmaybe
