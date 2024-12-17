@@ -15,8 +15,8 @@
 		"source=/home/${localEnv:USER}/.ssh/,target=/home/${localEnv:USER}/.ssh/,type=bind",
 		"source=/dev,target=/dev,type=bind"
 	],
-	"workspaceFolder": "/home/${localEnv:USER}/mpc-driving",
-	"workspaceMount": "source=${localWorkspaceFolder},target=/home/${localEnv:USER}/mpc-driving,type=bind",
+	"workspaceFolder": "/home/${localEnv:USER}/ros2_ws/src/mpc-driving",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/home/${localEnv:USER}/ros2_ws/src/mpc-driving,type=bind",
 	"runArgs": [
 		"--name",
 		"dev-mpc-driving",
