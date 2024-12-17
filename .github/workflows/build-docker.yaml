@@ -2,7 +2,7 @@ name: build-docker
 
 on:
   push:
-    branches: "main"
+    branches: -*-
     paths: 
       - 'DockerDev'
       - '.github/workflows/build-docker.yaml'
